@@ -12,6 +12,7 @@ ASSIGNMENT REQUIREMENTS
 [ ] 4. Upload to GitHub and paste the link below.
 -----------------------------------------------------------------------
 """
+#Task 1: While loop
 there_yet = False
 while there_yet == False:
     print(there_yet)
@@ -19,7 +20,7 @@ while there_yet == False:
     if answer == "yes":
         there_yet = True
 
-
+#Task 2: For loop
 for i in range(99,0,-1):
     if i > 1:
         print(f"{i} bottles of beer on the wall!")
