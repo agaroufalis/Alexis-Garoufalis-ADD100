@@ -22,8 +22,6 @@ def error_Check(choice_type):
                 break
         except ValueError:
             print("Please enter a valid numerical value.")
-        except TypeError:
-            print("Please enter a valid numerical value.")
     return amount
 
 print("Menu: 1. Balance, 2. Deposit, 3. Withdraw, 4. Transfer, 5. Exit")
