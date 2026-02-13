@@ -22,6 +22,7 @@ def error_Check(choice_type):
                 break
         except ValueError:
             print("Please enter a valid numerical value.")
+
     return amount
 
 print("Menu: 1. Balance, 2. Deposit, 3. Withdraw, 4. Transfer, 5. Exit")
@@ -46,6 +47,7 @@ while True:
             case "3": #Withdraw
                 choice_type = "withdraw"
                 withdraw = error_Check(choice_type)
+
                 if (balance - withdraw) < 0:
                     print(f"Withdrawing ${withdraw:,.2f} will result in an overdraft.")
                     print(f"Please enter an amount less than ${balance:,.2f}")
@@ -59,12 +61,14 @@ while True:
                 choice_type = "transfer"
                 transfer = error_Check(choice_type)
                 recipient = input(f"Who would you like to transfer ${transfer:,.2f} to? ")
+
                 if recipient == "":
                     print(f"Please enter a valid name of the person you want to transfer ${transfer:,.2f} to.")
                     recipient = input(f"Who would you like to transfer ${transfer:,.2f} to? ")
                 elif int(recipient.isdigit()) == True:
                     print(f"Hmmm.. I don't think that's a valid name. Please enter a valid name of the person you want to transfer ${transfer:,.2f} to.")
                     recipient = input(f"Who would you like to transfer ${transfer:,.2f} to? ")
+                    
                 if (balance - transfer) < 0:
                     print(f"transferring ${transfer:,.2f} will result in an overdraft.")
                     print(f"Please enter an amount less than ${balance:,.2f}")
