@@ -15,7 +15,6 @@ ASSIGNMENT 9A: THE SMOOTHIE SPRINT
 BASES = ("Water", "Apple Juice", "Orange Juice", "Milk")
 FRUITS = ("Strawberry", "Banana", "Mango", "Blueberry")
 
-
 # TODO: Define get_price(size)
 def get_price(size):
     if size == "Small":
@@ -32,20 +31,6 @@ def blend(size, base, fruit, scoops):
     print(f"Size: {size}")
     print(f"Base: Smoothie with {base} base.")
     print(f"Fruits: {scoops} scoops of {fruit}.")
-
-def check_errors(variable, user_input):
-    if variable == "choice_size":
-        if user_input not in SIZES:
-            choice_size = input("Size (Small/Medium/Large): ").title().strip()
-    elif variable == "choice_base":
-        if user_input not in BASES:
-            print("Please choose from the bases listed")
-            choice_base = input("Select Base (Water/Apple Juice/Orange Juice/Milk): ").title().strip()
-    elif variable =="choice_fruit":
-        if user_input not in FRUITS:
-            print("Please choose from the fruits listed")
-            choice_fruit = input("Select Fruit (Strawberry/Banana/Mango/Blueberry): ").title().strip()
-
 
 # TODO: Define main() to collect input and call your logic
 
