@@ -8,14 +8,7 @@ Developer: Alexis Garoufalis
 MENU_FILE = "menu.txt"
 ORDER_TYPE = ("New", "Edit", "Cancel")
 ORDER_CATEGORY = ("Drinks", "Apps", "Ramen")
-menu_choices = {
-    "base_sizes": ["Small", "Large"],
-    "base_type": ["White", "Red", "Shoyu"],
-    "spiciness": ["Mild", "Medium", "Hot"],
-    "add_ins": ["Bean Sprouts", "Naruto", "Soft-Boiled Egg", "Sweet Corn"],
-    "drinks": ["Ramune", "Sake", "Sapporo"],
-    "apps": ["Karrage","Edamame", "Tempura", "Takoyaki"]
-}
+
 class Orders:
     def __init__(order, place, drinks=None, apps=None, ramen=None):
         order.place = place
@@ -46,9 +39,12 @@ def get_order_type():
 
 
 def get_customer_info(orders):
-
-    last_order = next(reversed(orders))
-    order_number = last_order + 1
+    order_number = 100
+    if order_number in orders:
+        last_order = list(orders)[-1]
+        order_number = last_order + 1
+    else:
+        order_number = 100
 
     place = input("Is this order for (1)here or (2)to-go? ")
 
@@ -58,28 +54,28 @@ def get_customer_info(orders):
         setting = (f"t{table}s{seat} ")
         # TODO: add error checking
         orders[order_number]=Orders(setting)
-       
+        return order_number
     
     if place =="2":
         name = input("Please enter customer name: ")
         orders[order_number]=Orders(name)
+        return order_number
 
-
-def take_order(order_number):
+def take_order(order_number, orders):
     cat = input("Order Category (Drinks/Apps/Ramen): ")
 
-    orders[order_number].drinks= input("Drinks (Ramune/Sake/Sapporo/None): ")
+    orders[order_number].drinks= input("Drinks (Ramune/Sake/Sapporo/None): ").title
 
-    orders[order_number].apps = input("Appetizers (Karrage/Edamame/Tempura/Takoyaki): ")
+    orders[order_number].apps = input("Appetizers (Karrage/Edamame/Tempura/Takoyaki): ").title
 
-    size = input("1. Size (Small/Large): ")
-    base = input("2. Base (White/Red/Shoyu): ")
-    spice = input("3. Spice (Mild/Medium/Hot): ")
-    add_ons = input("4. Add-ons (Bean Sprouts/Naruto/Soft-Boiled Egg/Sweet Corn): ")
+    size = input("1. Size (Small/Large): ").title
+    base = input("2. Base (White/Red/Shoyu): ").title
+    spice = input("3. Spice (Mild/Medium/Hot): ").title
+    add_ons = input("4. Add-ons (Bean Sprouts/Naruto/Soft-Boiled Egg/Sweet Corn): ").title
     orders[order_number].ramen = (size, base, spice, add_ons)
      # TODO: add error checking
 
-def edit_order(order_number):
+def edit_order(order_number, orders):
     
     print(f"Editing order: {order_number}")
     print(f"Current order: \n{orders[order_number]}")      
@@ -106,16 +102,16 @@ def save_data_and_label(order, prices):
 def main():
     orders = {}
     # 1. Identity Phase
-    order_number = get_customer_info()
+    order_number = get_customer_info(orders)
     
     # 2. Data Collection Phase
-    current_order = take_order(order_number)
+    current_order = take_order(order_number, orders)
 
      # 2. Possible Data Editing Phase
-    current_order = edit_order(order_number)
+    current_order = edit_order(order_number, orders)
 
     # 3. Calculation Phase
-    final_price = load_prices(current_order)
+    final_price = load_prices(current_order, MENU_FILE)
 
     # 4. Handoff Phase
     save_data_and_label(order_number, final_price)
