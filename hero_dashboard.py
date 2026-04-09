@@ -15,7 +15,7 @@ ASSIGNMENT 11A: THE OFFICE HERO DASHBOARD
 OFFICE_NAME = "Office Hero HQ"
 TAX_RATE = 0.05
 
-
+# Returns TWO values (float, string)
 def process_expenses(item_name, price, quantity):
 
     subtotal = price * quantity
@@ -36,7 +36,7 @@ def process_expenses(item_name, price, quantity):
 
 
 def main():
-    print(f"Welcome to {OFFICE_NAME} Expense Dashboard\n")
+    print(f"Welcome to {OFFICE_NAME} Expense Dashboard")
 
     item_name = input("Enter item name: ")
 
@@ -53,7 +53,7 @@ def main():
         item_name=item_name,
         price=price,
         quantity=quantity
-    )
+        )
 
     # Print both returned values
     print(summary)
@@ -61,5 +61,8 @@ def main():
 
 
 # Run the program
-if __name__ == "__main__":
-    main()
+
+main()
+
+
+   

@@ -4,6 +4,8 @@ Project: Soup-O-Ramen POS (V1.0)
 Developer: Alexis Garoufalis
 """
 
+import datetime
+
 # GLOBAL CONSTANTS (Pantry Rules)
 MENU_FILE = "menu.txt"
 ORDER_TYPE = ("New", "Edit", "Cancel")
@@ -22,11 +24,32 @@ class Orders:
     def calculate_total(order, prices):
         total = 0
         if order.drinks in prices:
-            total += prices[order.drinks]
-        # TODO add other attributes
-        # TODO add error checking
+            drinks_subtotal += prices[order.drinks]
+        if order.drinks in prices:
+            apps_subtotal += prices[order.apps]
+        if order.drinks in prices:
+            ramen_subtotal += prices[order.ramen]
+        total = drinks_subtotal + apps_subtotal + ramen_subtotal
         return total
+    
 
+def process_expenses(item_name, price, quantity):
+
+    subtotal = price * quantity
+    tax = subtotal * TAX_RATE
+    final_total = subtotal + tax
+
+    summary = (
+        f"\n--- Expense Summary ---\n"
+        f"Item: {item_name}\n"
+        f"Price: ${price:.2f}\n"
+        f"Quantity: {quantity}\n"
+        f"Subtotal: ${subtotal:.2f}\n"
+        f"Tax (5%): ${tax:.2f}\n"
+        f"Total: ${final_total:.2f}\n"
+    )
+
+    return final_total, summary
 
 # Select the order type to determine the operation to be preformed
 def get_order_type():
@@ -89,9 +112,10 @@ def load_prices(MENU_FILE):
     # TODO: load prices into dictionary
 
 
-def save_data_and_label(order, prices):
+def save_data_and_label(order, order_number,total, prices):
     """Appends to order_history.txt and prints the human-readable label."""
     # TODO: Write raw data for computer 
+    current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print("\n--- RECEIPT ---")
     print(f"Order #: {order_number}")
     print(f"Drinks: {order.drinks}")
@@ -99,21 +123,34 @@ def save_data_and_label(order, prices):
     print(f"Ramen: {order.ramen}")
     print(f"Total: ${total:.2f}")
 
+    with open("store_receipts.txt", "a") as file:
+        file.write(f"\n[{current_time}] ORDER: {order_number}\n")
+        
+        for item, in order.items():
+            file.write(f" - {item}:\n")
+            
+        file.write("----------------------\n")
+    
+    print("Receipt successfully logged to system!")
+    
+
 def main():
     orders = {}
     # 1. Identity Phase
-    order_number = get_customer_info(orders)
+    order_number = get_customer_info(orders = orders)
     
     # 2. Data Collection Phase
-    current_order = take_order(order_number, orders)
+    current_order = take_order(order_number = order_number, orders = orders)
 
      # 2. Possible Data Editing Phase
-    current_order = edit_order(order_number, orders)
+    current_order = edit_order(order_number = order_number, orders = orders)
 
     # 3. Calculation Phase
-    final_price = load_prices(current_order, MENU_FILE)
+    final_price = load_prices(MENU_FILE, current_order = current_order)
 
     # 4. Handoff Phase
-    save_data_and_label(order_number, final_price)
+    save_data_and_label(order_number = order_number, final_price = final_price)
 
 main()
+
+
