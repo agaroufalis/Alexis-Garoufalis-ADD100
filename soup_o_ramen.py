@@ -6,11 +6,28 @@ Developer: Alexis Garoufalis
 
 import datetime
 
-# GLOBAL CONSTANTS (Pantry Rules)
 MENU_FILE = "menu.txt"
-ORDER_TYPE = ("New", "Edit", "Cancel")
-ORDER_CATEGORY = ("Drinks", "Apps", "Ramen")
+DATA_FILE = "order_log.txt"
+HUMAN_REPORT = "receipt.txt"
+TAX_RATE = 0.05
 
+# Menu validation options
+DRINK_OPTIONS = ("Ramune", "Sake", "Sapporo", "None")
+APP_OPTIONS = ("Karrage", "Edamame", "Tempura", "Takoyaki")
+SIZE_OPTIONS = ("Small", "Large")
+BASE_OPTIONS = ("White", "Red", "Shoyu")
+SPICE_OPTIONS = ("Mild", "Medium", "Hot")
+ADDON_OPTIONS = ("Bean Sprouts", "Naruto", "Egg", "Corn")
+
+
+def get_valid_input(prompt, valid_options):
+    while True:
+        choice = input(prompt).title().strip()
+        if choice in valid_options:
+            return choice
+        print(f"Invalid choice. Options: {', '.join(valid_options)}")
+
+     
 class Orders:
     def __init__(order, place, drinks=None, apps=None, ramen=None):
         order.place = place
@@ -21,17 +38,6 @@ class Orders:
     def __str__(order):
         return (f"Place: {order.place} \nDrinks: {order.drinks} \nApps: {order.apps} \nRamen: {order.ramen}")
 
-    def calculate_total(order, prices):
-        total = 0
-        if order.drinks in prices:
-            drinks_subtotal += prices[order.drinks]
-        if order.drinks in prices:
-            apps_subtotal += prices[order.apps]
-        if order.drinks in prices:
-            ramen_subtotal += prices[order.ramen]
-        total = drinks_subtotal + apps_subtotal + ramen_subtotal
-        return total
-    
 
 def process_expenses(item_name, price, quantity):
 
@@ -106,22 +112,68 @@ def edit_order(order_number, orders):
     # TODO append edits to existing order
     
 
-def load_prices(MENU_FILE):
-    prices = {}
-    return total
-    # TODO: load prices into dictionary
+def calculate_total(order, MENU_FILE):
+    total = 0
+    ramen_price = 0
+    addon_price = 0
+
+    try:
+        with open(MENU_FILE, "r") as f:
+            for line in f:
+                name, price = line.strip().split(",")
+                price = float(price)
+
+                # Drinks
+                if name == order.drinks:
+                    total += price
+
+                # Apps
+                if name == order.apps:
+                    total += price
+
+                # Ramen base (size-based)
+                if order.ramen:
+                    size = order.ramen[0]
+                    if name == f"Ramen_{size}":
+                        ramen_price = price
+
+                    # Add-on pricing
+                    addon = order.ramen[3]
+                    if name == addon:
+                        addon_price = price
+
+    except FileNotFoundError:
+        print("Menu file not found.")
+
+    total += ramen_price + addon_price
+
+    tax = total * TAX_RATE
+    final_total = total + tax
+
+    return final_total, tax
 
 
-def save_data_and_label(order, order_number,total, prices):
+def save_data_and_label(order, order_number,total, tax):
     """Appends to order_history.txt and prints the human-readable label."""
-    # TODO: Write raw data for computer 
+   
     current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    print("\n--- RECEIPT ---")
-    print(f"Order #: {order_number}")
-    print(f"Drinks: {order.drinks}")
-    print(f"Apps: {order.apps}")
-    print(f"Ramen: {order.ramen}")
-    print(f"Total: ${total:.2f}")
+   
+
+    with open(HUMAN_REPORT, "w") as file:
+        file.write(f"SOUP-O-RAMEN RECEIPT - {current_time}\n")
+        file.write(f"ORDER #: {order_number}\n")
+        file.write(f"LOCATION: {order.place}\n\n")
+
+        file.write("ITEMS:\n")
+        file.write(f" Drink: {order.drinks}\n")
+        file.write(f" App: {order.apps}\n")
+        file.write(f" Ramen: {order.ramen}\n\n")
+
+        file.write(f"TAX: ${tax:.2f}\n")
+        file.write(f"TOTAL: ${total:.2f}\n")
+
+    print("\nReceipt saved successfully!")
+
 
     with open("store_receipts.txt", "a") as file:
         file.write(f"\n[{current_time}] ORDER: {order_number}\n")
@@ -132,7 +184,7 @@ def save_data_and_label(order, order_number,total, prices):
         file.write("----------------------\n")
     
     print("Receipt successfully logged to system!")
-    
+
 
 def main():
     orders = {}
@@ -142,14 +194,14 @@ def main():
     # 2. Data Collection Phase
     current_order = take_order(order_number = order_number, orders = orders)
 
-     # 2. Possible Data Editing Phase
+    # 3. Possible Data Editing Phase
     current_order = edit_order(order_number = order_number, orders = orders)
 
-    # 3. Calculation Phase
-    final_price = load_prices(MENU_FILE, current_order = current_order)
+    # 4. Calculation Phase
+    total, tax = calculate_total(current_order, MENU_FILE)
 
-    # 4. Handoff Phase
-    save_data_and_label(order_number = order_number, final_price = final_price)
+    # 5. Handoff Phase
+    save_data_and_label(current_order, order_number, total, tax)
 
 main()
 
